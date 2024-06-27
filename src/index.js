@@ -1,4 +1,6 @@
 const express = require('express');
+const {SERVER_PORT} = require('./config/server')
+
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http, {
@@ -25,15 +27,16 @@ io.on('connection', (socket) => {
     // 用户登录
     socket.on('login', (userId) => {
         users.set(userId, socket.id);
+        socket.userId = userId;
         console.log(`用户 ${userId} 登录`);
     });
 
     // 私聊消息
-    socket.on('private message', ({ to, message }) => {
+    socket.on('private message', ({to, message}) => {
         const receiverSocket = users.get(to);
         if (receiverSocket) {
             io.to(receiverSocket).emit('private message', {
-                from: socket.id,
+                from: socket.userId,
                 message: message
             });
         }
@@ -51,6 +54,7 @@ io.on('connection', (socket) => {
     });
 });
 
-http.listen(3001, () => {
-    console.log(`socket服务器运行在 http://localhost:3001`);
+// SERVER_PORT=3001  从环境变量中获取
+http.listen(SERVER_PORT, () => {
+    console.log(`服务器(socket)运行成功😊,端口:${SERVER_PORT}`);
 });
