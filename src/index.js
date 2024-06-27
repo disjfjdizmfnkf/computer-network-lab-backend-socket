@@ -1,5 +1,5 @@
 const express = require('express');
-const {SERVER_PORT} = require('./config/server')
+const { SERVER_PORT } = require('./config/server')
 
 const app = express();
 const http = require('http').createServer(app);
@@ -29,6 +29,9 @@ io.on('connection', (socket) => {
         users.set(userId, socket.id);
         socket.userId = userId;
         console.log(`用户 ${userId} 登录`);
+
+        // 通知其他用户该用户上线
+        socket.broadcast.emit('friend online', userId);
     });
 
     // 私聊消息
@@ -48,13 +51,15 @@ io.on('connection', (socket) => {
             if (socketId === socket.id) {
                 users.delete(userId);
                 console.log(`用户 ${userId} 断开连接`);
+
+                // 通知其他用户该用户离线
+                socket.broadcast.emit('friend offline', userId);
                 break;
             }
         }
     });
 });
 
-// SERVER_PORT=3001  从环境变量中获取
 http.listen(SERVER_PORT, () => {
     console.log(`服务器(socket)运行成功😊,端口:${SERVER_PORT}`);
 });
