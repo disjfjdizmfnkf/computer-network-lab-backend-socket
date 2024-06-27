@@ -3,6 +3,7 @@ const { SERVER_PORT } = require('./config/server')
 
 const app = express();
 const http = require('http').createServer(app);
+// 创建 socket
 const io = require('socket.io')(http, {
     cors: {
         origin: "http://localhost:5173",
@@ -18,7 +19,7 @@ app.use(cors({
     credentials: true
 }));
 
-// 用于存储用户连接
+// 用哈希表用存储用户连接
 const users = new Map();
 
 io.on('connection', (socket) => {
@@ -61,5 +62,5 @@ io.on('connection', (socket) => {
 });
 
 http.listen(SERVER_PORT, () => {
-    console.log(`服务器(socket)运行成功😊,端口:${SERVER_PORT}`);
+    console.log(`服务器(socket)运行成功🚀🚀🚀,端口:${SERVER_PORT}`);
 });
