@@ -23,16 +23,20 @@ app.use(cors({
 const users = new Map();
 
 io.on('connection', (socket) => {
-    console.log('用户连接');
+    console.log('新的连接建立');
 
     // 用户登录
     socket.on('login', (userId) => {
-        users.set(userId, socket.id);
-        socket.userId = userId;
-        console.log(`用户 ${userId} 登录`);
+        if (userId && typeof userId === 'number') {
+            users.set(userId, socket.id);
+            socket.userId = userId;
+            console.log(`用户 ${userId} 登录`);
 
-        // 通知其他用户该用户上线
-        socket.broadcast.emit('friend online', userId);
+            // 通知其他用户该用户上线
+            socket.broadcast.emit('friend online', userId);
+        } else {
+            console.log('收到无效的用户ID');
+        }
     });
 
     // 私聊消息
